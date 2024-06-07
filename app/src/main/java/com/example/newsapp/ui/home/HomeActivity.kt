@@ -1,24 +1,15 @@
-package com.example.newsapp
+package com.example.newsapp.ui.home
 
 import android.os.Bundle
-import android.view.Menu
 import android.view.View
 import android.widget.ImageView
-import android.widget.Toast
-import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.navigation.NavigationView
-import androidx.navigation.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.navigateUp
-import androidx.navigation.ui.setupActionBarWithNavController
-import androidx.navigation.ui.setupWithNavController
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import com.example.newsapp.databinding.ActivityHomeBinding
-import com.example.newsapp.ui.CategoriesFragment
-import com.example.newsapp.ui.Category
-import com.example.newsapp.ui.NewsFragment
+import com.example.newsapp.R
+import com.example.newsapp.ui.category.CategoriesFragment
+import com.example.newsapp.ui.category.Category
+import com.example.newsapp.ui.news.NewsFragment
 import com.example.newsapp.ui.SettingsFragment
 import com.google.android.material.appbar.AppBarLayout
 
@@ -42,7 +33,7 @@ class HomeActivity : AppCompatActivity() {
         categories = findViewById(R.id.categories)
         settings = findViewById(R.id.settings)
         pushFragment(categoriesFragment)
-        categoriesFragment.onCategoryClickListener = object :CategoriesFragment.OnCategoryClickListener{
+        categoriesFragment.onCategoryClickListener = object : CategoriesFragment.OnCategoryClickListener{
             override fun onCategoryClick(category: Category) {
                 pushFragment(NewsFragment.getInstance(category),true)
             }

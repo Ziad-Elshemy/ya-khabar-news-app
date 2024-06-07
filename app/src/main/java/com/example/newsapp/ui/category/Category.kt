@@ -1,4 +1,4 @@
-package com.example.newsapp.ui
+package com.example.newsapp.ui.category
 
 data class Category(
     val id:String,

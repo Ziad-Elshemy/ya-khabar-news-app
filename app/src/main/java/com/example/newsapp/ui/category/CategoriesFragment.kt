@@ -1,15 +1,12 @@
-package com.example.newsapp.ui
+package com.example.newsapp.ui.category
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Adapter
 import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.example.newsapp.R
-import java.util.Objects
 
 class CategoriesFragment:Fragment() {
     override fun onCreateView(
@@ -40,14 +37,14 @@ class CategoriesFragment:Fragment() {
         recyclerView = requireView().findViewById(R.id.recycler_view_cat)
         recyclerView.adapter=adapter
 
-        adapter.onItemClickListener = object :CategoriesAdapter.OnItemClickListener{
+        adapter.onItemClickListener = object : CategoriesAdapter.OnItemClickListener {
             override fun onItemClick(position: Int, category: Category) {
                 onCategoryClickListener?.onCategoryClick(category)
             }
         }
     }
 
-    var onCategoryClickListener:OnCategoryClickListener?=null
+    var onCategoryClickListener: OnCategoryClickListener?=null
     interface OnCategoryClickListener{
         fun onCategoryClick(category: Category)
     }
