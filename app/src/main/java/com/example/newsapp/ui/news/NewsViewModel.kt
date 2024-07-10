@@ -5,11 +5,23 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.newsapp.Constans
+import com.example.newsapp.NetworkHandler
 import com.example.newsapp.api.ApiManager
+import com.example.newsapp.database.MyDatabase
 import com.example.newsapp.model.ArticlesItem
 import com.example.newsapp.model.NewsResponse
 import com.example.newsapp.model.SourcesItem
 import com.example.newsapp.model.SourcesResponse
+import com.example.newsapp.repos.news.NewsOnlineDataSource
+import com.example.newsapp.repos.news.NewsOnlineDataSourceImpl
+import com.example.newsapp.repos.news.NewsRepository
+import com.example.newsapp.repos.news.NewsRepositoryImpl
+import com.example.newsapp.repos.sources.SourcesOfflineDataSource
+import com.example.newsapp.repos.sources.SourcesOfflineDataSourceImpl
+import com.example.newsapp.repos.sources.SourcesOnlineDataSource
+import com.example.newsapp.repos.sources.SourcesOnlineDataSourceImpl
+import com.example.newsapp.repos.sources.SourcesRepository
+import com.example.newsapp.repos.sources.SourcesRepositoryImpl
 import com.example.newsapp.ui.category.Category
 import kotlinx.coroutines.launch
 import retrofit2.Call
@@ -23,6 +35,26 @@ class NewsViewModel : ViewModel() {
     val showProgress = MutableLiveData<Boolean>(false)
     val messageLiveData = MutableLiveData<String>()
 
+    lateinit var newsRepository: NewsRepository
+    lateinit var sourcesRepository: SourcesRepository
+    lateinit var newsOnlineDataSource: NewsOnlineDataSource
+
+    lateinit var sourcesOnlineDataSource: SourcesOnlineDataSource
+    lateinit var sourcesOfflineDataSource: SourcesOfflineDataSource
+    lateinit var networkHandler: NetworkHandler
+
+    init {
+        newsOnlineDataSource = NewsOnlineDataSourceImpl(ApiManager.getApis())
+        newsRepository = NewsRepositoryImpl(newsOnlineDataSource)
+
+        sourcesOnlineDataSource = SourcesOnlineDataSourceImpl(ApiManager.getApis())
+        sourcesOfflineDataSource = SourcesOfflineDataSourceImpl(MyDatabase.getInstance())
+        networkHandler = Constans.networkHandler
+        sourcesRepository = SourcesRepositoryImpl(
+            sourcesOnlineDataSource, sourcesOfflineDataSource, networkHandler
+        )
+    }
+
 
     fun getNewsSources(category: Category) {
         // using coroutine
@@ -31,9 +63,9 @@ class NewsViewModel : ViewModel() {
             try {
 
                 val sourcesResponse =
-                    ApiManager.getApis().getSources(Constans.API_KEY, category.id)
+                    sourcesRepository.getSources(category.id)
                 showProgress.value = false
-                sourcesLiveData.value = sourcesResponse.sources
+                sourcesLiveData.value = sourcesResponse
                 Log.e("News Sources Response: ", sourcesResponse.toString())
 
             } catch (ex: Exception) {
@@ -68,9 +100,9 @@ class NewsViewModel : ViewModel() {
 //        adapter.changeData(null)
                 showProgress.value = true
                 val newsResponse =
-                    ApiManager.getApis().getNews(Constans.API_KEY, source.id.toString())
+                    newsRepository.getNews(source.id)
                 showProgress.value = false
-                newsListLiveData.value = newsResponse.articles
+                newsListLiveData.value = newsResponse
             } catch (ex: Exception) {
                 messageLiveData.value = "Error Loading News"
                 showProgress.value = false
